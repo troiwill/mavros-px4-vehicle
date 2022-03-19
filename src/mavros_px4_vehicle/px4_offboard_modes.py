@@ -1,0 +1,4 @@
+
+
+CMD_SET_VEL = 0
+CMD_SET_POSE_LCL = 1
