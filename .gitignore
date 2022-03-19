@@ -1,0 +1,5 @@
+# Ignore any Python compiled files.
+*.pyc
+
+# Ignore hidden files.
+*.
