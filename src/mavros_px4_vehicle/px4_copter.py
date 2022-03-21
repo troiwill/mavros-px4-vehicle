@@ -11,7 +11,7 @@ class PX4MavRosCopter(px4_vehicle_base.PX4MavRosVehicleBase):
     A class for controlling a copter with a PX4 autopilot via MAVROS.
     """
 
-    def __init__(self, vehicle_name, delay = 5., timeout = None,
+    def __init__(self, vehicle_name, delay = 3., timeout = None,
         auto_connect = False, use_vehicle_name_in_topics = False):
         super(PX4MavRosCopter, self).__init__(vehicle_name, delay, timeout,
             auto_connect, use_vehicle_name_in_topics)

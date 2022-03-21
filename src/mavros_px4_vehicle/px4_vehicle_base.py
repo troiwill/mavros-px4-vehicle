@@ -173,6 +173,8 @@ class PX4MavRosVehicleBase:
 
             rospy.loginfo("Resetting connect flag.")
             self.__is_connected = False
+
+            rospy.sleep(5)
         else:
             rospy.logwarn("Vehicle is not connected.")
     #end def
