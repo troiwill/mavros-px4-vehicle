@@ -1,1 +1,3 @@
-# mavros-px4-vehicle-pkg
+# MAVROS PX4 Vehicle, A ROS Package
+
+This codebase is a ROS package that allows a user to communicate with a PX4 autopilot using MAVROS. This package was developed using [Ubuntu 18.04 LTS (Bionic Beaver)](https://releases.ubuntu.com/18.04/), [ROS Melodic](http://wiki.ros.org/melodic), and the [PX4 autopilot](https://docs.px4.io/master/en/). Users can control a PX4-enabled vehicle using an easy-to-use Python API. Essentially, users can control PX4-enabled vehicles within Python ROS nodes with this API. Currently, the API can control a multi-rotor aircraft. However, we are developing controls for (land-based) rovers too.
