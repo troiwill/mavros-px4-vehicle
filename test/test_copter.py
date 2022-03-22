@@ -55,7 +55,7 @@ class TestCopterFeatures(unittest.TestCase):
         copter.connect()
 
         # Arm the vehicle.
-        rv = self.copter.arm()
+        rv = copter.arm()
 
         # Run tests.
         # self.assertTrue(rv, "Arm cmd not sent?")
