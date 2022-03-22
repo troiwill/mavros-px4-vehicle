@@ -257,7 +257,7 @@ class PX4MavRosVehicleBase:
         return rv
     #end def
 
-    def set_position(self, x, y, z, t):
+    def set_position(self, x = 0, y = 0, z = 0, t = 0):
         """
         Sends a pose message to the FCU. The reference frame is FLU 
         (X Forward, Y Left, Z Up) for the vehicle's body. See 
@@ -291,7 +291,7 @@ class PX4MavRosVehicleBase:
         twist.angular = geometry_msgs.msg.Vector3(wx, wy, wz)
 
         rv = self.__offboard_pub.set_cmd(twist,
-            px4_offboard_modes.CMD_SET_POSE_LCL)
+            px4_offboard_modes.CMD_SET_VEL)
         if rv is False:
             rospy.logwarn("Failed to set offboard velocity message.")
 
