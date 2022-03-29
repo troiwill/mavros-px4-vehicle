@@ -3,85 +3,83 @@
 import rospy
 import unittest
 
-from mavros_px4_vehicle.px4_copter import PX4MavRosCopter
+from mavros_px4_vehicle.px4_vehicle import PX4Vehicle
 
 
-class TestCopterFeatures(unittest.TestCase):
+class TestVehicleFeatures(unittest.TestCase):
 
     def test_connect(self):
         # Do initial set up and test for no connection.
-        copter = PX4MavRosCopter("test")
-        self.assertFalse(copter.is_connected(),
+        vehicle = PX4Vehicle()
+        self.assertFalse(vehicle.is_connected(),
             "Vehicle should not be connected!")
 
         # Connect to the vehicle and test for connection.
-        copter.connect()
-        self.assertTrue(copter.is_connected(),
+        vehicle.connect()
+        self.assertTrue(vehicle.is_connected(),
             "Vehicle should be connected!")
 
-        # TODO: how to test for publisher and subscribers?
-
-        copter.disconnect()
-        del copter
+        vehicle.disconnect()
+        del vehicle
     #end def
 
     def test_auto_connect(self):
         # Do initial set up and test for connection.
-        copter = PX4MavRosCopter("test", auto_connect = True)
-        self.assertEquals(copter.is_connected(), True,
+        vehicle = PX4Vehicle(auto_connect = True)
+        self.assertEquals(vehicle.is_connected(), True,
             "Vehicle should be connected!")
 
-        copter.disconnect()
-        del copter
+        vehicle.disconnect()
+        del vehicle
     #end def
 
     def test_disconnect(self):
         # Do initial set up and test for connection.
-        copter = PX4MavRosCopter("test", auto_connect = True)
-        self.assertTrue(copter.is_connected(),
+        vehicle = PX4Vehicle(auto_connect = True)
+        self.assertTrue(vehicle.is_connected(),
             "Vehicle should be connected!")
 
         rospy.sleep(3.)
-        copter.disconnect()
-        self.assertFalse(copter.is_connected(),
+        vehicle.disconnect()
+        self.assertFalse(vehicle.is_connected(),
             "Vehicle should NOT be connected!")
 
-        copter.disconnect()
-        del copter
+        vehicle.disconnect()
+        del vehicle
     #end def
 
     def test_arm(self):
-        copter = PX4MavRosCopter("test")
-        copter.connect()
+        vehicle = PX4Vehicle()
+        vehicle.connect()
 
         # Arm the vehicle.
-        rv = copter.arm()
+        rv = vehicle.arm()
 
         # Run tests.
         # self.assertTrue(rv, "Arm cmd not sent?")
-        self.assertTrue(copter.state.armed,
+        self.assertTrue(vehicle.state.armed,
             "Internal state says not armed?")
-        self.assertTrue(copter.is_armed(),
+        self.assertTrue(vehicle.is_armed(),
             "Vehicle state is not armed?")
 
         # Disarm the vehicle.
-        rv = copter.disarm()
+        rv = vehicle.disarm()
         # self.assertTrue(rv, "Disarm cmd not sent?")
-        self.assertFalse(copter.state.armed,
+        self.assertFalse(vehicle.state.armed,
             "Internal state still says armed?")
-        self.assertFalse(copter.is_armed(),
+        self.assertFalse(vehicle.is_armed(),
             "Vehicle state is still armed?")
 
-        copter.disconnect()
-        del copter
+        vehicle.disconnect()
+        del vehicle
     #end def
 #end class
 
 if __name__ == "__main__":
     import rostest
     PKG = 'mavros_px4_vehicle'
-    FNAME = "test_copter.py"
+    FNAME = "test_vehicle.py"
 
-    rospy.init_node("test_copter_features")
-    rostest.rosrun(PKG, FNAME, TestCopterFeatures)
+    rospy.init_node("test_vehicle_features")
+    rostest.rosrun(PKG, FNAME, TestVehicleFeatures)
 #end if
