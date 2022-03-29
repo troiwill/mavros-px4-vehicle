@@ -25,6 +25,7 @@ class SetPositionCmdBuilder():
 
 class SetVelocityCmdBuilder:
 
+    @staticmethod
     def build(vx  = 0, vy = 0, vz = 0, wx = 0, wy = 0, wz = 0):
         twist = geometry_msgs.msg.Twist()
         twist.linear = geometry_msgs.msg.Vector3(vx, vy, vz)
