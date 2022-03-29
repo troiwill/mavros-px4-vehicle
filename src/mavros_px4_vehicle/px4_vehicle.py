@@ -48,7 +48,8 @@ class PX4Vehicle:
             rv = resp.success
             if not resp.success:
                 rospy.logerr("Could not arm the vehicle!")
-            rospy.loginfo("Vehicle armed!")
+            else:
+                rospy.loginfo("Vehicle armed!")
             rospy.sleep(self.delay)
 
         else:
@@ -105,7 +106,8 @@ class PX4Vehicle:
             rv = resp.success
             if not resp.success:
                 raise Exception("Could not disarm!")
-            rospy.loginfo("Vehicle disarmed!")
+            else:
+                rospy.loginfo("Vehicle disarmed!")
             rospy.sleep(self.delay)
 
         else:
@@ -151,6 +153,7 @@ class PX4Vehicle:
         if self.is_connected():
             return self.__state_sub.data.mode
         else:
+            rospy.logwarn("Vehicle is not connected.")
             return None
     #end def
 
@@ -175,7 +178,8 @@ class PX4Vehicle:
         resp = self.__set_mode_service.call(custom_mode=new_mode)
         if not resp.mode_sent:
             raise Exception("Could not set mode to " + new_mode)
-        rospy.loginfo("Vehicle is set to new mode: " + new_mode)
+        else:
+            rospy.loginfo("Vehicle is set to new mode: " + new_mode)
 
         if wait_for_new_mode is True:
             self.wait_for_status(self.get_mode, new_mode, 4)
