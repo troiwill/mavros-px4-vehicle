@@ -23,6 +23,8 @@ class PX4Vehicle:
         self.timeout = timeout
         self.__is_connected = False
 
+        self.__topic_prefix = "" if self.name == "" else ("/" + self.name)
+
         if auto_connect is True:
             self.connect()
     #end def
@@ -64,28 +66,28 @@ class PX4Vehicle:
             # Set up ROS publishers.
             rospy.logdebug("Setting up ROS publishers.")
             self.__offboard_pub = px4_offboard_pub.OffboardPublisher(
-                self.name)
+                self.__topic_prefix)
 
             # Set up ROS services.
             rospy.logdebug("Setting up ROS services.")
             self.__arm_service = ros_handle.RosServiceHandle(
-                self.name + "/mavros/cmd/arming",
+                self.__topic_prefix + "/mavros/cmd/arming",
                 mavros_msgs.srv.CommandBool)
             self.__set_mode_service = ros_handle.RosServiceHandle(
-                self.name + "/mavros/set_mode",
+                self.__topic_prefix + "/mavros/set_mode",
                 mavros_msgs.srv.SetMode)
 
             self.__wp_clear_service = ros_handle.RosServiceHandle(
-                self.name + "/mavros/mission/clear",
+                self.__topic_prefix + "/mavros/mission/clear",
                 mavros_msgs.srv.WaypointClear)
             self.__wp_push_service = ros_handle.RosServiceHandle(
-                self.name + "/mavros/mission/push",
+                self.__topic_prefix + "/mavros/mission/push",
                 mavros_msgs.srv.WaypointPush)
 
             # Set up ROS subscribers.
             rospy.logdebug("Setting up ROS subscribers.")
             self.__state_sub = ros_handle.RosSubscribeHandle(
-                self.name + "/mavros/state", mavros_msgs.msg.State)
+                self.__topic_prefix + "/mavros/state", mavros_msgs.msg.State)
             self.__state_sub.setup()
 
             self.__is_connected = True
@@ -131,6 +133,7 @@ class PX4Vehicle:
             del self.__wp_clear_service
             del self.__wp_push_service
             del self.__state_sub
+            del self.__topic_prefix
 
             rospy.loginfo("Resetting connect flag.")
             self.__is_connected = False
