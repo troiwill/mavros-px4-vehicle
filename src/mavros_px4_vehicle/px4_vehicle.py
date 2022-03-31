@@ -196,7 +196,19 @@ class PX4Vehicle:
         for more details.
         """
         self.__offboard_pub.set_cmd(position_cmd,
-            px4_offboard_modes.CMD_SET_POSE_LCL)
+            px4_offboard_modes.CMD_SET_POSE_LOCAL)
+    #end def
+
+    def set_posvelacc(self, pva_cmd):
+        """
+        Sends a pose message, a velocity message, or an acceleration 
+        message to the FCU. The reference frame is FLU
+        (X Forward, Y Left, Z Up) for the vehicle's body. See 
+        https://docs.px4.io/v1.12/en/ros/external_position_estimation.html#reference-frames-and-ros
+        for more details.
+        """
+        self.__offboard_pub.set_cmd(pva_cmd,
+            px4_offboard_modes.CMD_SET_RAW_LOCAL)
     #end def
 
     def set_velocity(self, twist_cmd):

@@ -1,7 +1,7 @@
-import threading
-
-import rospy
 import geometry_msgs.msg
+import mavros_msgs.msg
+import rospy
+import threading
 
 import px4_offboard_modes
 
@@ -16,16 +16,22 @@ class OffboardPublisher:
         self.__can_run = True
         self.__new_data = None
         self.__pub_index = None
-        self.__publishers = [ None ] * 2
+        self.__publishers = dict()
 
         # Set up publishers.
+        QUEUE_SIZE = 10
+        self.__publishers[px4_offboard_modes.CMD_SET_RAW_LOCAL] = \
+            rospy.Publisher(topic_prefix \
+                + "/mavros/setpoint_raw/local", mavros_msgs.msg.PositionTarget,
+                queue_size = QUEUE_SIZE)
+
         self.__publishers[px4_offboard_modes.CMD_SET_VEL] = rospy.Publisher(
             topic_prefix + "/mavros/setpoint_velocity/cmd_vel_unstamped",
-            geometry_msgs.msg.Twist, queue_size = 10)
+            geometry_msgs.msg.Twist, queue_size = QUEUE_SIZE)
 
-        self.__publishers[px4_offboard_modes.CMD_SET_POSE_LCL] = \
+        self.__publishers[px4_offboard_modes.CMD_SET_POSE_LOCAL] = \
             rospy.Publisher(topic_prefix + "/mavros/setpoint_position/local",
-            geometry_msgs.msg.PoseStamped, queue_size = 10)
+            geometry_msgs.msg.PoseStamped, queue_size = QUEUE_SIZE)
 
         self.__can_send_new_msg_signal.set()
         self.__pub_thread = threading.Thread(target=self.__publish_loop__)
@@ -38,7 +44,8 @@ class OffboardPublisher:
         Returns a list of allowable modes.
         """
         return [
-            px4_offboard_modes.CMD_SET_POSE_LCL,
+            px4_offboard_modes.CMD_SET_RAW_LOCAL,
+            px4_offboard_modes.CMD_SET_POSE_LOCAL,
             px4_offboard_modes.CMD_SET_VEL
         ]
 
