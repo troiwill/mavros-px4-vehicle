@@ -6,6 +6,7 @@ import mavros_msgs.srv
 import numpy as np
 import rospy
 
+import px4_modes
 import px4_offboard_modes
 import px4_offboard_pub
 import ros_handle
@@ -183,6 +184,13 @@ class PX4Vehicle:
             return None
     #end def
 
+    def in_hovering_mode(self):
+        """
+        Checks if the vehicle is in loiter or hovering mode.
+        """
+        return self.get_mode() == px4_modes.PX4_MODE_LOITER
+    #end def
+
     def is_armed(self):
         """
         Specifies if the vehicle is armed.
@@ -213,6 +221,18 @@ class PX4Vehicle:
             rospy.logwarn("Vehicle is not connected.")
             return False
         #end if
+    #end def
+
+    def land(self, block = False):
+        """
+        Requests that the vehicle land.
+        """
+        if self.is_armed():
+            self.set_mode(px4_modes.PX4_MODE_LAND)
+            if block:
+                self.wait_for_status(self.is_armed, False, 1)
+        else:
+            rospy.logerr("Vehicle is not armed.")
     #end def
 
     def set_mode(self, new_mode, wait_for_new_mode = False):
@@ -267,6 +287,18 @@ class PX4Vehicle:
         """
         self.__offboard_pub.set_cmd(twist_cmd,
             px4_offboard_modes.CMD_SET_VEL)
+    #end def
+
+    def takeoff(self, block = False):
+        """
+        Requests that the vehicle takeoff is possible.
+        """
+        if self.is_armed():
+            self.set_mode(px4_modes.PX4_MODE_TAKEOFF)
+            if block:
+                self.wait_for_status(self.in_hovering_mode, True, 2)
+        else:
+            rospy.logerr("Vehicle is not armed.")
     #end def
 
     def wait_for_status(self, status_fnc, expected_status, loop_rate):
