@@ -3,6 +3,7 @@ import __future__
 import geometry_msgs.msg
 import mavros_msgs.msg
 import mavros_msgs.srv
+import numpy as np
 import rospy
 
 import px4_offboard_modes
@@ -194,7 +195,25 @@ class PX4Vehicle:
         Determines if this instance is set up to communicate with the vehicle.
         """
         return self.__is_connected and not rospy.is_shutdown()
-    #end defs
+    #end def
+
+    def is_near_local(self, pose, distance):
+        """
+        Checks if the vehicle is within a certain distance of the specified
+        position.
+        """
+        if self.is_connected():
+            diff_xyz = np.array([
+                self.local_pose.pose.position.x - pose.pose.position.x,
+                self.local_pose.pose.position.y - pose.pose.position.y,
+                self.local_pose.pose.position.z - pose.pose.position.z
+            ])
+            return np.sqrt(np.sum(np.square(diff_xyz))) <= distance
+        else:
+            rospy.logwarn("Vehicle is not connected.")
+            return False
+        #end if
+    #end def
 
     def set_mode(self, new_mode, wait_for_new_mode = False):
         """
@@ -213,7 +232,7 @@ class PX4Vehicle:
         return resp.mode_sent
     #end def
 
-    def set_position(self, position_cmd):
+    def set_position(self, position_cmd, block = False, thres = 0.1):
         """
         Sends a pose message to the FCU. The reference frame is FLU 
         (X Forward, Y Left, Z Up) for the vehicle's body. See 
@@ -222,6 +241,9 @@ class PX4Vehicle:
         """
         self.__offboard_pub.set_cmd(position_cmd,
             px4_offboard_modes.CMD_SET_POSE_LOCAL)
+        
+        while block and not self.is_near_local(position_cmd, thres):
+            rospy.sleep(0.2)
     #end def
 
     def set_posvelacc(self, pva_cmd):
