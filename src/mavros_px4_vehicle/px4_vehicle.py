@@ -1,5 +1,6 @@
 import __future__
 
+import geometry_msgs.msg
 import mavros_msgs.msg
 import mavros_msgs.srv
 import rospy
@@ -30,12 +31,24 @@ class PX4Vehicle:
     #end def
 
     @property
-    def state(self):
-        if self.is_connected():
-            return self.__state_sub.data
-        else:
+    def local_pose(self):
+        if not self.is_connected():
             rospy.logwarn("Vehicle is not connected.")
-            return None
+        return self.__lcl_pose_sub.data
+    #end def
+
+    @property
+    def local_vel(self):
+        if not self.is_connected():
+            rospy.logwarn("Vehicle is not connected.")
+        return self.__lcl_vel_sub.data
+    #end def
+
+    @property
+    def state(self):
+        if not self.is_connected():
+            rospy.logwarn("Vehicle is not connected.")
+        return self.__state_sub.data
     #end def
 
     def arm(self):
@@ -91,6 +104,16 @@ class PX4Vehicle:
                 self.__topic_prefix + "/mavros/state", mavros_msgs.msg.State)
             self.__state_sub.setup()
 
+            self.__lcl_pose_sub = ros_handle.RosSubscribeHandle(
+                self.__topic_prefix + "/mavros/local_position/pose",
+                geometry_msgs.msg.PoseStamped)
+            self.__lcl_pose_sub.setup()
+
+            self.__lcl_vel_sub = ros_handle.RosSubscribeHandle(
+                self.__topic_prefix + "/mavros/local_position/velocity_local",
+                geometry_msgs.msg.TwistStamped)
+            self.__lcl_vel_sub.setup()
+
             self.__is_connected = True
         else:
             rospy.logwarn("Vehicle is already connected.")
@@ -134,6 +157,8 @@ class PX4Vehicle:
             del self.__set_mode_service
             del self.__wp_clear_service
             del self.__wp_push_service
+            del self.__lcl_pose_sub
+            del self.__lcl_vel_sub
             del self.__state_sub
             del self.__topic_prefix
 
