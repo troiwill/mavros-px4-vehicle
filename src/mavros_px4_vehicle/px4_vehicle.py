@@ -72,6 +72,20 @@ class PX4Vehicle:
         
         return rv
     #end def
+
+    def clear_waypoints(self):
+        """
+        Sends a request to clear the mission waypoints on the FCU.
+        """
+        resp = self.__wp_clear_service.call()
+        if not resp.success:
+            raise Exception("Could not clear mission waypoints.")
+    
+        rospy.loginfo("Waypoints cleared!")
+        rospy.sleep(self.delay)
+
+        return resp.success
+    #end def
     
     def connect(self):
         """
@@ -117,6 +131,9 @@ class PX4Vehicle:
             self.__lcl_vel_sub.setup()
 
             self.__is_connected = True
+
+            # Final setup calls.
+            self.clear_waypoints()
         else:
             rospy.logwarn("Vehicle is already connected.")
     #end def
@@ -252,17 +269,17 @@ class PX4Vehicle:
         return resp.mode_sent
     #end def
 
-    def set_position(self, position_cmd, block = False, thres = 0.1):
+    def set_pose2d(self, pose2d_cmd, block = False, thres = 0.1):
         """
         Sends a pose message to the FCU. The reference frame is FLU 
         (X Forward, Y Left, Z Up) for the vehicle's body. See 
         https://docs.px4.io/v1.12/en/ros/external_position_estimation.html#reference-frames-and-ros
         for more details.
         """
-        self.__offboard_pub.set_cmd(position_cmd,
+        self.__offboard_pub.set_cmd(pose2d_cmd,
             px4_offboard_modes.CMD_SET_POSE_LOCAL)
         
-        while block and not self.is_near_local(position_cmd, thres):
+        while block and not self.is_near_local(pose2d_cmd, thres):
             rospy.sleep(0.2)
     #end def
 
@@ -287,6 +304,32 @@ class PX4Vehicle:
         """
         self.__offboard_pub.set_cmd(twist_cmd,
             px4_offboard_modes.CMD_SET_VEL)
+    #end def
+
+    def set_waypoints(self, waypoints):
+        """
+        Sends one or more waypoints to the flight control unit. This 
+        function assumes the vehicle is already armed and/or flying.
+        """
+        n_wps_sent = 0
+        if len(waypoints) > 0 and self.is_armed():
+            # Clear waypoints from the FCU and add the new waypoints
+            # to the FCU.
+            self.clear_waypoints()
+            resp = self.__wp_push_service.call(0, waypoints)
+            if not resp.success:
+                raise Exception("Could not send new waypoints.")
+
+            rospy.loginfo("Sent new mission with {} waypoints!".format(
+                resp.wp_transfered))
+            rospy.sleep(self.delay)
+            n_wps_sent = resp.wp_transfered
+
+        else:
+            rospy.logwarn("Vehicle is not armed.")
+        
+        rv = (n_wps_sent == len(waypoints) and len(waypoints) > 0)
+        return rv
     #end def
 
     def takeoff(self, block = False):

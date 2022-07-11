@@ -17,7 +17,7 @@ def offboard_hover():
     # Request the copter to hover using local position commands.
     rospy.loginfo("Sending the set position commands.")
     cmd = SetPositionWithYawCmdBuilder.build(z = 2.)
-    copter.set_position(cmd)
+    copter.set_pose2d(cmd)
     rospy.sleep(2)
 
     rospy.loginfo("Changing to offboard mode.")
