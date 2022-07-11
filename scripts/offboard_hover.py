@@ -3,7 +3,7 @@
 import rospy
 
 from mavros_px4_vehicle.px4_modes import PX4_MODE_LOITER, PX4_MODE_OFFBOARD
-from mavros_px4_vehicle.px4_offboard_modes import SetPositionCmdBuilder
+from mavros_px4_vehicle.px4_offboard_modes import SetPositionWithYawCmdBuilder
 from mavros_px4_vehicle.px4_vehicle import PX4Vehicle
 
 
@@ -16,7 +16,7 @@ def offboard_hover():
 
     # Request the copter to hover using local position commands.
     rospy.loginfo("Sending the set position commands.")
-    cmd = SetPositionCmdBuilder.build(z = 2.)
+    cmd = SetPositionWithYawCmdBuilder.build(z = 2.)
     copter.set_position(cmd)
     rospy.sleep(2)
 
