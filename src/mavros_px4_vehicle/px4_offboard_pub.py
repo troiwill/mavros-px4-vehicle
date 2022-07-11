@@ -65,7 +65,7 @@ class OffboardPublisher:
         publisher = None
 
         while self.__is_okay__():
-            if self.__can_send_new_msg_signal.is_set() is False:
+            if self.__can_send_new_msg_signal.is_set() == False:
                 data = self.__new_data
                 publisher = self.__publishers[self.__pub_index]
                 self.__can_send_new_msg_signal.set()
