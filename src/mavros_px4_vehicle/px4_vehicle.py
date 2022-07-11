@@ -14,7 +14,7 @@ import ros_handle
 
 class PX4Vehicle:
     r"""
-    An abstract class that defines a set of functions and variables used for 
+    A class that defines a set of functions and variables used for 
     controlling a vehicle using PX4 and MAVROS.
     """
 
