@@ -219,8 +219,8 @@ class PX4Vehicle:
         if self.is_connected():
             resp = self.__param_get_service.call(param_id=param_id)
             if resp.success == True:
-                rospy.loginfo("Vehicle return param {} = {}".format(
-                    param_id, resp.value))
+                rospy.loginfo("Vehicle return param {}: Int = {}, Real = {}".format(
+                    param_id, resp.value.integer, resp.value.real))
             else:
                 rospy.logerr("Could not get param " + param_id)
             rospy.sleep(self.delay)
