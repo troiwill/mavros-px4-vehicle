@@ -100,8 +100,8 @@ class OffboardPublisher:
         # Stop the publish thread.
         self.__can_run = False
         self.__pub_thread.join()
-        for i in range(len(self.__publishers)):
-            self.__publishers[i].unregister()
+        for key in self.__publishers.keys():
+            self.__publishers[key].unregister()
 
         # Destroy the instance attributes.
         del self.__can_send_new_msg_signal
