@@ -219,7 +219,7 @@ class PX4Vehicle:
         if self.is_connected():
             resp = self.__param_get_service.call(param_id=param_id)
             if resp.success == True:
-                rospy.info("Vehicle return param {} = {}".format(
+                rospy.loginfo("Vehicle return param {} = {}".format(
                     param_id, resp.value))
             else:
                 rospy.logerr("Could not get param " + param_id)
