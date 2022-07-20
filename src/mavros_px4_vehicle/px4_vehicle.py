@@ -107,6 +107,13 @@ class PX4Vehicle:
                 self.__topic_prefix + "/mavros/set_mode",
                 mavros_msgs.srv.SetMode)
 
+            self.__param_set_service = ros_handle.RosServiceHandle(
+                self.__topic_prefix + "/mavros/param/set",
+                mavros_msgs.srv.ParamSet)
+            self.__param_get_service = ros_handle.RosServiceHandle(
+                self.__topic_prefix + "/mavros/param/get",
+                mavros_msgs.srv.ParamGet)
+
             self.__wp_clear_service = ros_handle.RosServiceHandle(
                 self.__topic_prefix + "/mavros/mission/clear",
                 mavros_msgs.srv.WaypointClear)
@@ -176,6 +183,8 @@ class PX4Vehicle:
             del self.__set_mode_service
             del self.__wp_clear_service
             del self.__wp_push_service
+            del self.__param_set_service
+            del self.__param_get_service
             del self.__lcl_pose_sub
             del self.__lcl_vel_sub
             del self.__state_sub
@@ -199,6 +208,25 @@ class PX4Vehicle:
         else:
             rospy.logwarn("Vehicle is not connected.")
             return None
+    #end def
+
+    def get_param(self, param_id):
+        """
+        Returns the value of the parameter with id `param_id` if the vehicle 
+        is connected. Otherwise, return None.
+        """
+        rv = None
+        if self.is_connected():
+            resp = self.__param_get_service.call(param_id=param_id)
+            if resp.success == True:
+                rospy.info("Vehicle return param {} = {}".format(
+                    param_id, resp.value))
+            else:
+                rospy.logerr("Could not get param " + param_id)
+            rospy.sleep(self.delay)
+            rv = resp.value
+        #end if
+        return rv
     #end def
 
     def in_hovering_mode(self):
@@ -267,6 +295,31 @@ class PX4Vehicle:
         rospy.sleep(self.delay)
 
         return resp.mode_sent
+    #end def
+
+    def set_param(self, param_id, value):
+        """
+        Sends a request to set the parameter on the vehicle.
+        """
+        rv = None
+        if self.is_connected():
+            pval = mavros_msgs.msg.ParamValue()
+            if isinstance(value, float):
+                pval.real = value
+            else:
+                pval.integer = value
+            resp = self.__param_set_service.call(param_id=param_id,
+                value=pval)
+            if resp.success == True:
+                rospy.loginfo("Vehicle param {} is now {}.".format(
+                    param_id, value))
+            else:
+                rospy.logerr("Vehicle failed to set param {} to {}.".format(
+                    param_id, value))
+            rospy.sleep(self.delay)
+            rv = resp.value
+        #end if
+        return rv
     #end def
 
     def set_pose2d(self, pose2d_cmd, block = False, thres = 0.1):
