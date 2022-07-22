@@ -2,7 +2,7 @@
 
 import rospy
 
-from mavros_px4_vehicle.px4_modes import PX4_MODE_LOITER, PX4_MODE_OFFBOARD
+from mavros_px4_vehicle.px4_modes import PX4_MODE_OFFBOARD
 from mavros_px4_vehicle.px4_offboard_modes import SetPositionWithYawCmdBuilder
 from mavros_px4_vehicle.px4_vehicle import PX4Vehicle
 
@@ -18,17 +18,20 @@ def offboard_hover():
     rospy.loginfo("Sending the set position commands.")
     cmd = SetPositionWithYawCmdBuilder.build(z = 2.)
     copter.set_pose2d(cmd)
-    rospy.sleep(2)
+    copter.sleep(2)
 
     rospy.loginfo("Changing to offboard mode.")
     copter.set_mode(PX4_MODE_OFFBOARD)
-    rospy.sleep(10.)
+    copter.sleep(10.)
 
-    rospy.loginfo("Changing to hover mode.")
-    copter.set_mode(PX4_MODE_LOITER)
-    rospy.spin()
+    rospy.loginfo("Landing the copter.")
+    copter.land(block=True)
+    if copter.is_armed():
+        copter.disarm()
+    copter.disconnect()
 #end def
 
 if __name__ == "__main__":
     rospy.init_node("offboard_hover")
     offboard_hover()
+    rospy.spin()
