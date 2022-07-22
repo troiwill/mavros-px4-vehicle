@@ -25,6 +25,7 @@ def use_vehicle_parameters():
     rospy.loginfo("Copter is taking off.")
     copter.takeoff(block=True)
     copter.wait_for_status(copter.in_hovering_mode, True, 2)
+    copter.sleep(2.)
 
     # Send the pose command to the drone. If the set parameter works
     # correctly, the drone should remain at its current altitude and 
@@ -32,15 +33,16 @@ def use_vehicle_parameters():
     rospy.loginfo("Sending pose2d command.")
     cmd = SetPositionWithYawCmdBuilder.build(x = 2., z = 1.)
     copter.set_pose2d(cmd)
-    rospy.sleep(2)
+    copter.sleep(1.)
     rospy.loginfo("Changing to offboard mode.")
     copter.set_mode(PX4_MODE_OFFBOARD)
+    copter.sleep(3.)
 
-    rospy.loginfo("Changing to hover mode.")
-    copter.set_mode(PX4_MODE_LOITER)
-
+    # Land the vehicle.
+    rospy.loginfo("Landing the copter.")
     copter.land(block=True)
-    copter.disarm()
+    if copter.is_armed():
+        copter.disarm()
     copter.disconnect()
 #end def
 
