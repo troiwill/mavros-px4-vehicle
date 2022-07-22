@@ -18,7 +18,7 @@ class PX4Vehicle:
     controlling a vehicle using PX4 and MAVROS.
     """
 
-    def __init__(self, name = "", delay = 3., timeout = None,
+    def __init__(self, name = "", delay = 2., timeout = None,
         auto_connect = False):
         rospy.logdebug("Setting up vehicle.")
         self.name = name
@@ -28,7 +28,7 @@ class PX4Vehicle:
 
         self.__topic_prefix = "" if self.name == "" else ("/" + self.name)
 
-        if auto_connect is True:
+        if auto_connect == True:
             self.connect()
     #end def
 
@@ -65,7 +65,7 @@ class PX4Vehicle:
                 rospy.logerr("Could not arm the vehicle!")
             else:
                 rospy.loginfo("Vehicle armed!")
-            rospy.sleep(self.delay)
+            self.sleep(self.delay)
 
         else:
             rospy.logwarn("Vehicle is not connected.")
@@ -82,7 +82,7 @@ class PX4Vehicle:
             raise Exception("Could not clear mission waypoints.")
     
         rospy.loginfo("Waypoints cleared!")
-        rospy.sleep(self.delay)
+        self.sleep(self.delay)
 
         return resp.success
     #end def
@@ -157,7 +157,7 @@ class PX4Vehicle:
                 raise Exception("Could not disarm!")
             else:
                 rospy.loginfo("Vehicle disarmed!")
-            rospy.sleep(self.delay)
+            self.sleep(self.delay)
 
         else:
             rospy.logwarn("Vehicle is not armed.")
@@ -193,7 +193,7 @@ class PX4Vehicle:
             rospy.loginfo("Resetting connect flag.")
             self.__is_connected = False
 
-            rospy.sleep(5)
+            self.sleep(5)
         else:
             rospy.logwarn("Vehicle is not connected.")
     #end def
@@ -223,7 +223,7 @@ class PX4Vehicle:
                     param_id, resp.value.integer, resp.value.real))
             else:
                 rospy.logerr("Could not get param " + param_id)
-            rospy.sleep(self.delay)
+            self.sleep(self.delay)
             rv = resp.value
         #end if
         return rv
@@ -292,7 +292,7 @@ class PX4Vehicle:
 
         if wait_for_new_mode is True:
             self.wait_for_status(self.get_mode, new_mode, 4)
-        rospy.sleep(self.delay)
+        self.sleep(self.delay)
 
         return resp.mode_sent
     #end def
@@ -316,7 +316,7 @@ class PX4Vehicle:
             else:
                 rospy.logerr("Vehicle failed to set param {} to {}.".format(
                     param_id, value))
-            rospy.sleep(self.delay)
+            self.sleep(self.delay)
             rv = resp.value
         #end if
         return rv
@@ -333,7 +333,7 @@ class PX4Vehicle:
             px4_offboard_modes.CMD_SET_POSE_LOCAL)
         
         while block and not self.is_near_local(pose2d_cmd, thres):
-            rospy.sleep(0.2)
+            self.sleep(0.2)
     #end def
 
     def set_posvelacc(self, pva_cmd):
@@ -375,7 +375,7 @@ class PX4Vehicle:
 
             rospy.loginfo("Sent new mission with {} waypoints!".format(
                 resp.wp_transfered))
-            rospy.sleep(self.delay)
+            self.sleep(self.delay)
             n_wps_sent = resp.wp_transfered
 
         else:
@@ -383,6 +383,16 @@ class PX4Vehicle:
         
         rv = (n_wps_sent == len(waypoints) and len(waypoints) > 0)
         return rv
+    #end def
+
+    def sleep(self, sleep_time=None):
+        """
+        Call ROS sleep with a time of `sleep_time`.
+        """
+        if not isinstance(sleep_time, (float, int)):
+            rospy.logerr("Called sleep with incorrect type of argument.")
+            sleep_time = self.delay
+        rospy.sleep(float(sleep_time))
     #end def
 
     def takeoff(self, block = False):
