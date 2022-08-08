@@ -1,7 +1,8 @@
 import geometry_msgs.msg
+import numpy as np
 import mavros_msgs.msg
 import rospy
-import tf.transformations
+from scipy.spatial.transform import Rotation as R
 
 
 CMD_SET_VEL = 10
@@ -12,7 +13,7 @@ class SetPositionWithYawCmdBuilder:
 
     @staticmethod
     def build(x = 0., y = 0., z = 0., hdg = 0.):
-        qt = tf.transformations.quaternion_from_euler(0., 0., hdg)
+        qt = R.from_rotvec(np.array([0.,0.,hdg])).as_quat()
         cmd = geometry_msgs.msg.PoseStamped()
         cmd.header.stamp = rospy.Time.now()
 
