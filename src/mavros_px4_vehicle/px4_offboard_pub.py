@@ -3,7 +3,7 @@ import mavros_msgs.msg
 import rospy
 import threading
 
-import px4_offboard_modes
+from mavros_px4_vehicle import px4_offboard_modes
 
 
 class OffboardPublisher:
