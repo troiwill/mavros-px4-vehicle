@@ -6,10 +6,10 @@ import mavros_msgs.srv
 import numpy as np
 import rospy
 
-import px4_modes
-import px4_offboard_modes
-import px4_offboard_pub
-import ros_handle
+from mavros_px4_vehicle import px4_modes
+from mavros_px4_vehicle import px4_offboard_modes
+from mavros_px4_vehicle import px4_offboard_pub
+from mavros_px4_vehicle import ros_handle
 
 
 class PX4Vehicle:
