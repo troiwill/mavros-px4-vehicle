@@ -165,11 +165,11 @@ class PX4Vehicle:
         return rv
     #end def
 
-    def disconnect(self):
+    def disconnect(self, force=False):
         """
         Shuts down the "connection" to the vehicle.
         """
-        if self.is_armed():
+        if self.is_armed() and force == False:
             rospy.logwarn("Disarm the vehicle first.")
             return
 
