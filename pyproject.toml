@@ -1,0 +1,45 @@
+[project]
+name = "mavros_px4_vehicle"
+version = "0.1.0"
+authors = [
+  { name="Troi Williams", email="willkode@outlook.com" },
+]
+description = "A ROS package for communicating with a PX4 autopilot using MAVROS."
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+keywords = [
+    "python",
+    "drone",
+    "quadcopter",
+    "python3",
+    "ros",
+    "px4",
+    "mavlink",
+    "gazebo",
+    "python2",
+    "quadrotor",
+    "mavros",
+    "melodic",
+    "ros-melodic",
+    "ros-noetic",
+    "noetic"
+]
+dependencies = [
+    "numpy",
+    "scipy",
+    "rospy"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/troiwill/mavros-px4-vehicle"
+"Bug Tracker" = "https://github.com/troiwill/mavros-px4-vehicle/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
