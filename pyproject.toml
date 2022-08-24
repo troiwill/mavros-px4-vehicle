@@ -31,7 +31,7 @@ keywords = [
     "noetic"
 ]
 dependencies = [
-    "numpy",
+    "numpy>=1.23.2",
     "scipy==1.9.0"
 ]
 
