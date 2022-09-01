@@ -62,6 +62,6 @@ roslaunch px4 mavros_posix_sitl.launch
 
 The second terminal window should run the hover script.
 ```
-rosun mavros_px4_vehicle offboard_hover.py
+rosrun mavros_px4_vehicle offboard_hover.py
 ```
 If the script is successful, the drone should hover a few meters above the ground.
