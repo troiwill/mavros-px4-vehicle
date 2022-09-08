@@ -75,7 +75,8 @@ class FlightAvoidance:
         # Sanity checks.
         gx, gy, gz, gyaw = goal_pose
         if gz < 1.:
-            raise ValueError("Currently unable to fly below one meter for safety.")
+            rospy.logerr("Currently unable to fly below one meter for safety.")
+            return False
 
         if self.avoidance_mode == FlightAvoidance.AVOID_MODE_VERTICAL:
             curr_cmd = None
@@ -99,7 +100,10 @@ class FlightAvoidance:
                     rospy.loginfo("Flying to pose: ({:.3f}, {:.3f}, {:.3f}, {:.3f})".format(cx, cy, cz, cyaw))
                     self.__vehicle.set_pose2d(curr_cmd, block=True, thres=thres)
                     rospy.sleep(2.)
-
+                    
+                # Note the flight as a success.
+                return True
+            
             except:
                 rospy.logerr("Vehicle failed to reach the destination.")
                 
@@ -107,4 +111,5 @@ class FlightAvoidance:
                 self.__vehicle.set_mode(PX4_MODE_LOITER, True)
 
         else:
-            raise Exception("Unhandled case for avoidance mode: {}".format(self.avoidance_mode))
+            rospy.logerr("Unhandled case for avoidance mode: {}".format(self.avoidance_mode))
+        return False
