@@ -112,7 +112,7 @@ class FlightAvoidance:
                 ascend_pose = [x, y, self.min_cruise_altitude, yaw]
 
                 # Go to and turn towards a point above the goal/destination.
-                intermediary_yaw = np.arctan2(gy - y, gx - x) - yaw
+                intermediary_yaw = np.arctan2(gy - y, gx - x)
                 horz_end_pose = [gx, gy, self.min_cruise_altitude, intermediary_yaw]
 
                 # Descend to the goal/destination.
