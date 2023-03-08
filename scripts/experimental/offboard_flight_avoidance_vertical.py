@@ -25,12 +25,20 @@ def offboard_avoidance_vertical():
     copter.set_mode(PX4_MODE_OFFBOARD)
     copter.sleep(10.)
 
-    goal = [7., 7., 2., 0.]
-    rospy.loginfo("Flying to location {} with yaw {}".format(goal[:3], goal[-1]))
-    avoidance = FlightAvoidance(px4_vehicle=copter, min_safe_altitude=5.,
-        max_safe_altitude=10., avoid_mode=FlightAvoidance.AVOID_MODE_VERTICAL)
-    avoidance.go_to(goal)
+    avoidance = FlightAvoidance(px4_vehicle=copter, min_hover_altitude=1.5, min_cruise_altitude=5.,
+        max_cruise_altitude=10., avoid_mode=FlightAvoidance.AVOID_MODE_VERTICAL)
 
+    goals = [
+        [ 7.,  7.,  2.,  0.],
+        [-7., -7.,  2.,  0.],
+        [ 0.,  0.,  2.,  0.]
+    ]
+    for i, goal in enumerate(goals):
+        print("")
+        rospy.loginfo("G{}: Flying to location {} with yaw {}".format(i + 1, goal[:3], goal[-1]))
+        avoidance.go_to(goal)
+
+    print("")
     rospy.loginfo("Reached goal.")
     rospy.sleep(4.)
 
@@ -44,4 +52,3 @@ def offboard_avoidance_vertical():
 if __name__ == "__main__":
     rospy.init_node("offboard_avoidance_vertical")
     offboard_avoidance_vertical()
-    rospy.spin()
